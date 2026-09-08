@@ -12,6 +12,7 @@ Depois descubra o IP local do PC (ipconfig no cmd, procure "Endereco IPv4")
 e coloque esse IP no app Android.
 """
 
+import os
 import socket
 import threading
 import json
@@ -77,6 +78,12 @@ def scroll(dx: float, dy: float):
         user32.mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, int(dx * 40), 0)
 
 
+def shutdown_pc():
+    # /s = desligar, /t 3 = espera 3s antes (da uma margem de seguranca),
+    # /f = forca fechar programas que estejam travando o desligamento
+    os.system("shutdown /s /t 3 /f")
+
+
 def process_command(cmd: dict):
     tipo = cmd.get("type")
 
@@ -106,14 +113,19 @@ def process_command(cmd: dict):
         pyautogui.write(cmd.get("value", ""))
 
     elif tipo == "key":
-        # teclas especiais: enter, backspace, esc, space, tab, etc.
+        # teclas especiais: enter, backspace, delete, esc, space, tab, etc.
         pyautogui.press(cmd.get("value"))
 
     elif tipo == "hotkey":
-        # combinacao de teclas, ex: ["ctrl", "c"] ou ["ctrl", "v"]
+        # combinacao de teclas, ex: ["ctrl", "c"], ["ctrl", "v"] ou ["ctrl", "x"]
         keys = cmd.get("keys", [])
         if keys:
             pyautogui.hotkey(*keys)
+
+    elif tipo == "shutdown":
+        # pedido de desligar o PC vindo do app (ja confirmado do lado do celular)
+        print("[!] Pedido de desligamento recebido, desligando o PC...")
+        shutdown_pc()
 
 
 def handle_client(conn: socket.socket, addr):
