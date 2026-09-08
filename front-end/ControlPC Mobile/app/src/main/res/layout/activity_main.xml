@@ -6,47 +6,107 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <LinearLayout
+    <!-- Conteudo que pode rolar; ocupa todo o espaco que sobrar acima da barra fixa -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/ipInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="IP do PC (ex: 192.168.0.10)"
+                    android:inputType="text" />
+
+                <Button
+                    android:id="@+id/connectBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Conectar" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Desconectado" />
+
+            <View
+                android:id="@+id/touchpad"
+                android:layout_width="377dp"
+                android:layout_height="341dp"
+                android:layout_marginTop="16dp"
+                android:background="#DDDDDD" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="11sp"
+                android:textColor="#888888"
+                android:text="Toque = clique esquerdo | duplo toque = clique direito | pressione e arraste = selecionar texto | 2 dedos = scroll" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/leftClickBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Clique esquerdo" />
+
+                <Button
+                    android:id="@+id/rightClickBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Clique direito" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/statusText3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="By Abner" />
+            <TextView
+                android:id="@+id/statusText4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="v1.0.0" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Barra fixa: fica FORA do ScrollView, entao quando o teclado abre e a
+         janela encolhe, ela "sobra" e fica exatamente em cima do teclado,
+         junto com o campo de digitacao. -->
+    <EditText
+        android:id="@+id/keyboardInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/ipInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="IP do PC (ex: 192.168.0.10)"
-            android:inputType="text" />
-
-        <Button
-            android:id="@+id/connectBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Conectar" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/statusText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Desconectado" />
-
-    <View
-        android:id="@+id/touchpad"
-        android:layout_width="377dp"
-        android:layout_height="341dp"
-        android:layout_marginTop="16dp"
-        android:background="#DDDDDD" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="11sp"
-        android:textColor="#888888"
-        android:text="Toque = clique esquerdo | duplo toque = clique direito | pressione e arraste = selecionar texto | 2 dedos = scroll" />
+        android:hint="Toque aqui para digitar (envia para o PC)"
+        android:inputType="textVisiblePassword|textNoSuggestions"
+        android:importantForAutofill="no" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,45 +115,27 @@
         android:layout_marginTop="8dp">
 
         <Button
-            android:id="@+id/leftClickBtn"
+            android:id="@+id/enterBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Clique esquerdo" />
+            android:text="Enter" />
 
         <Button
-            android:id="@+id/rightClickBtn"
+            android:id="@+id/copyBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Clique direito" />
+            android:layout_marginStart="4dp"
+            android:text="Copiar" />
+
+        <Button
+            android:id="@+id/pasteBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="Colar" />
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/keyboardInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="Toque aqui para digitar (envia para o PC)" />
-
-    <Button
-        android:id="@+id/enterBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Enter" />
-
-    <TextView
-        android:id="@+id/statusText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="By Abner" />
-    <TextView
-        android:id="@+id/statusText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="v1.0.0" />
 
 </LinearLayout>

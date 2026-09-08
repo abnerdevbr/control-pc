@@ -109,6 +109,12 @@ def process_command(cmd: dict):
         # teclas especiais: enter, backspace, esc, space, tab, etc.
         pyautogui.press(cmd.get("value"))
 
+    elif tipo == "hotkey":
+        # combinacao de teclas, ex: ["ctrl", "c"] ou ["ctrl", "v"]
+        keys = cmd.get("keys", [])
+        if keys:
+            pyautogui.hotkey(*keys)
+
 
 def handle_client(conn: socket.socket, addr):
     print(f"[+] Conectado: {addr}")

@@ -1,4 +1,4 @@
-package com.example.controlpc
+package com.abnerluisz.controlpc
 
 import android.os.Bundle
 import android.text.Editable
@@ -33,6 +33,11 @@ class MainActivity : ComponentActivity() {
     // true enquanto o dedo esta pressionado e segurando (long press) para selecionar texto
     private var isSelecting = false
 
+    // true enquanto o proprio codigo esta limpando o campo de teclado.
+    // evita que o s.clear() do afterTextChanged dispare o TextWatcher de novo
+    // (o que mandava um backspace fantasma pro PC depois de cada tecla real)
+    private var isClearingKeyboardInput = false
+
     // sensibilidade do movimento: aumente para o cursor andar mais rapido
     private val sensitivity = 1.5f
 
@@ -60,11 +65,15 @@ class MainActivity : ComponentActivity() {
         val paddingOriginal = rootLayout.paddingLeft
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             view.setPadding(
                 paddingOriginal + systemBars.left,
                 paddingOriginal + systemBars.top,
                 paddingOriginal + systemBars.right,
-                paddingOriginal + systemBars.bottom
+                // usa o maior entre a barra do sistema e o teclado: quando o
+                // teclado abre, esse padding cresce e empurra a barra de
+                // digitacao (que fica no fim do layout) pra cima, grudada nele
+                paddingOriginal + maxOf(systemBars.bottom, ime.bottom)
             )
             insets
         }
@@ -77,6 +86,8 @@ class MainActivity : ComponentActivity() {
         val rightClickBtn = findViewById<Button>(R.id.rightClickBtn)
         val keyboardInput = findViewById<EditText>(R.id.keyboardInput)
         val enterBtn = findViewById<Button>(R.id.enterBtn)
+        val copyBtn = findViewById<Button>(R.id.copyBtn)
+        val pasteBtn = findViewById<Button>(R.id.pasteBtn)
 
         // toque simples no touchpad = clique esquerdo
         // toque duplo rapido = clique direito
@@ -178,6 +189,10 @@ class MainActivity : ComponentActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // ignora a mudanca gerada pelo nosso proprio s.clear() em afterTextChanged,
+                // senao ela e interpretada como "apagou N caracteres" e manda backspaces fantasmas
+                if (isClearingKeyboardInput) return
+
                 if (count > before) {
                     // foram inseridos caracteres (digitacao, autocorretor, colar texto)
                     val inserted = s?.subSequence(start + before, start + count)?.toString().orEmpty()
@@ -193,10 +208,16 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                if (isClearingKeyboardInput) return
                 // o texto de verdade fica so no PC, aqui o campo e sempre limpo
+                isClearingKeyboardInput = true
                 s?.clear()
+                isClearingKeyboardInput = false
             }
         })
+
+        copyBtn.setOnClickListener { sendHotkey(listOf("ctrl", "c")) }
+        pasteBtn.setOnClickListener { sendHotkey(listOf("ctrl", "v")) }
 
         tryAutoDiscoverAndConnect()
     }
@@ -294,6 +315,11 @@ class MainActivity : ComponentActivity() {
 
     private fun sendKey(key: String) {
         val json = JSONObject().put("type", "key").put("value", key)
+        client.send(json.toString() + "\n")
+    }
+
+    private fun sendHotkey(keys: List<String>) {
+        val json = JSONObject().put("type", "hotkey").put("keys", org.json.JSONArray(keys))
         client.send(json.toString() + "\n")
     }
 

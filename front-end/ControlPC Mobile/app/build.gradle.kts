@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.controlpc"
+    namespace = "com.abnerluisz.controlpc"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.controlpc"
+        applicationId = "com.abnerluisz.controlpc"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

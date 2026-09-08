@@ -1,4 +1,4 @@
-package com.example.controlpc
+package com.abnerluisz.controlpc
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
