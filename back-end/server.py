@@ -35,6 +35,7 @@ MOUSEEVENTF_LEFTUP = 0x0004
 MOUSEEVENTF_RIGHTDOWN = 0x0008
 MOUSEEVENTF_RIGHTUP = 0x0010
 MOUSEEVENTF_WHEEL = 0x0800
+MOUSEEVENTF_HWHEEL = 0x1000  # scroll horizontal
 
 
 def get_cursor_pos():
@@ -48,18 +49,32 @@ def move_relative(dx: float, dy: float):
     user32.SetCursorPos(int(x + dx), int(y + dy))
 
 
-def click(button: str = "left"):
+def mouse_down(button: str = "left"):
     if button == "right":
         user32.mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
-        user32.mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
     else:
         user32.mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+
+
+def mouse_up(button: str = "left"):
+    if button == "right":
+        user32.mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+    else:
         user32.mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
 
-def scroll(amount: float):
-    # cada "clique" de roda equivale a 120 no Windows
-    user32.mouse_event(MOUSEEVENTF_WHEEL, 0, 0, int(amount * 40), 0)
+def click(button: str = "left"):
+    # clique rapido = desce e sobe o botao na hora
+    mouse_down(button)
+    mouse_up(button)
+
+
+def scroll(dx: float, dy: float):
+    # cada "clique" de roda equivale a 120 no Windows, o *40 so ajusta a sensibilidade
+    if dy:
+        user32.mouse_event(MOUSEEVENTF_WHEEL, 0, 0, int(dy * 40), 0)
+    if dx:
+        user32.mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, int(dx * 40), 0)
 
 
 def process_command(cmd: dict):
@@ -75,8 +90,17 @@ def process_command(cmd: dict):
         click("left")
         click("left")
 
+    elif tipo == "mousedown":
+        # usado pra segurar o botao (ex: comeco de uma selecao de texto)
+        mouse_down(cmd.get("button", "left"))
+
+    elif tipo == "mouseup":
+        # solta o botao que estava segurado
+        mouse_up(cmd.get("button", "left"))
+
     elif tipo == "scroll":
-        scroll(cmd.get("dy", 0))
+        # dy = scroll vertical, dx = scroll horizontal, os dois podem vir juntos
+        scroll(cmd.get("dx", 0), cmd.get("dy", 0))
 
     elif tipo == "text":
         pyautogui.write(cmd.get("value", ""))
